@@ -10,7 +10,7 @@ const androidGradleFilePath = path.resolve(
   '../../platforms/android/app/build-extras.gradle'
 );
 const resPath = path.resolve(__dirname, '../../platforms/android/app/src/main/res/');
-const localResPath = path.resolve(__dirname, '../../resources/android/');
+const localResPath = path.resolve(__dirname, '../resources/android/');
 
 if (
   !fs.existsSync(copyToPath)
