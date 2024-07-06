@@ -41,7 +41,7 @@ function executeScript(script, index) {
     if (error) {
       console.error(`Error executing script: ${script}`);
       console.error(error);
-      process.exit(1);
+      // process.exit(1);
     } else {
       executeScript(scripts[index + 1], index + 1);
     }
