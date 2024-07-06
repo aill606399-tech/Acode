@@ -43,8 +43,6 @@ function executeScript(script, index) {
       console.error(error);
       process.exit(1);
     } else {
-      stdout && console.log(stdout);
-      stderr && console.error(stderr);
       executeScript(scripts[index + 1], index + 1);
     }
   });
