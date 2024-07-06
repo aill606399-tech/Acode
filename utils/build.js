@@ -22,6 +22,7 @@ const script4 = `cordova build ${platform} ${cordovamode} -- --jvmargs='-Xmx1536
 const script5 = `node ./utils/rename.js ${mode} ${app}`;
 
 const scripts = [script1, script2, script3, script4, script5];
+const errors = [];
 
 function executeScript(script, index) {
   if (index >= scripts.length) {
@@ -33,6 +34,7 @@ function executeScript(script, index) {
         console.log(`File -> ${file}`);
       });
     });
+    console.log(errors);
     return;
   }
 
@@ -41,7 +43,9 @@ function executeScript(script, index) {
     if (error) {
       console.error(`Error executing script: ${script}`);
       console.error(error);
+      errors.push(error)
       // process.exit(1);
+      executeScript(scripts[index + 1], index + 1);
     } else {
       executeScript(scripts[index + 1], index + 1);
     }
