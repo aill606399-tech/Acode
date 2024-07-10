@@ -98,6 +98,8 @@ export function RowItem({ id, icon, letters, action, value, ref, repeat }) {
     data-action={action}
     data-repeat={repeat}
   ></button>;
+  
+  console.log($item, ref, id, letters, action, repeat)
 
   if (typeof value === 'function') {
     $item.value = value;

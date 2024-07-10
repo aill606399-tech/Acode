@@ -197,15 +197,16 @@ class CodeRunner {
       name: "Built In Runner",
       icon: "play_arrow",
       project: true,
-      match: file => (["html", "js"]).includes(Url.extname(file.name)),
-      handler: function(file, { contextMenu }) {
-        contextMenu ? originalRunFile(): originalRun()
+      match: file => ["html", "js"].includes(Url.extname(file.name)),
+      handler: function (file, { contextMenu }) {
+        contextMenu ? originalRunFile() : originalRun();
       }
     }
   ];
 
   async initialize() {
-    let self = this, data;
+    let self = this,
+      data;
     this.$page = new Page("Outputs");
     this.$page.show = () => {
       actionStack.push({
@@ -249,9 +250,13 @@ class CodeRunner {
         "utf-8"
       );
     } else {
-      this.#commands = JSON.parse(
-        (await fs(this.#commandsUrl).readFile("utf-8")) || "[]"
-      );
+      try {
+        this.#commands = JSON.parse(
+          (await fs(this.#commandsUrl).readFile("utf-8")) || "[]"
+        );
+      } catch {
+        this.#commands = [];
+      }
     }
 
     this.#projectCommands.push({
@@ -321,7 +326,8 @@ class CodeRunner {
           uri: this.#commandsUrl
         });
       },
-      project: true, ignorable: true
+      project: true,
+      ignorable: true
     });
 
     this.#projectCommands.push({
@@ -426,35 +432,34 @@ class CodeRunner {
       if (type === "file") {
         optionName = "Run File";
         canRun = !Array.isArray(
-          await self.getHandler(
-            { name, uri: path }, true, false, false
-          )
+          await self.getHandler({ name, uri: path }, true, false, false)
         );
       } else {
         optionName = "Run Project";
         canRun = !Array.isArray(
-          await self.getHandler(
-            { name, uri: path }, true, true, false
-          )
+          await self.getHandler({ name, uri: path }, true, true, false)
         );
       }
 
       if (!canRun) return;
 
       return {
-        name: optionName, icon: "play_arrow",
+        name: optionName,
+        icon: "play_arrow",
         exec: () => self.runCode({ name, uri: path })
       };
     });
-    
-    const {list, cb} = this.settingsObj;
+
+    const { list, cb } = this.settingsObj;
     addCustomSettings(
       {
         key: "coderunner-settings",
         text: strings["coderunner"] || "Code Runner",
-        index: 1, icon: "play_arrow"
-      }, settingsPage("Code Runner", list, cb)
-    )
+        index: 1,
+        icon: "play_arrow"
+      },
+      settingsPage("Code Runner", list, cb)
+    );
 
     acode.define("coderunner", {
       getDirectoryForFile,
@@ -467,27 +472,33 @@ class CodeRunner {
 
   #commandsSettings() {
     const title = strings.formatter;
-  
-    const items = this.commands.map((item) => {
-      if (item.project || !item.name) return;
 
-      const { name, extension, command, icon } = item;
+    const items = this.commands
+      .map(item => {
+        if (item.project || !item.name) return;
 
-      return {
-        key: name, text: `${name} (*.${extension})`,
-        icon: icon || `file file_type_default file_type_${name.toLowerCase()}`,
-        value: command, prompt: `Command for ${name}`, promptType: "text"
-      };
-    }).filter(Boolean);
-  
-    const page = settingsPage(title, items, callback, 'separate');
+        const { name, extension, command, icon } = item;
+
+        return {
+          key: name,
+          text: `${name} (*.${extension})`,
+          icon:
+            icon || `file file_type_default file_type_${name.toLowerCase()}`,
+          value: command,
+          prompt: `Command for ${name}`,
+          promptType: "text"
+        };
+      })
+      .filter(Boolean);
+
+    const page = settingsPage(title, items, callback, "separate");
     page.show();
-  
+
     const callback = (key, value) => {
-      const target = this.commands.find(item => (item.name === name));
-      if (target) (target.command = value);
+      const target = this.commands.find(item => item.name === name);
+      if (target) target.command = value;
       appSettings.update();
-    }
+    };
   }
 
   get logger() {
@@ -520,13 +531,13 @@ class CodeRunner {
     return [...data, ...this.#projectCommands];
   }
 
-  async getHandler(file, single=true, projects=true, ignorable=true) {
+  async getHandler(file, single = true, projects = true, ignorable = true) {
     let extension = this.getFileExtension(file.name);
     let commands = [];
 
     for (let command of this.commands) {
-      if (command.ignorable && (ignorable === false)) continue;
-      if (command.project && (projects === false)) continue;
+      if (command.ignorable && ignorable === false) continue;
+      if (command.project && projects === false) continue;
 
       if (command.extension && command.extension == extension) {
         if (single) {
@@ -568,9 +579,7 @@ class CodeRunner {
   }
 
   run(project) {
-    return this.runCode(
-      editorManager.activeFile, project
-    );
+    return this.runCode(editorManager.activeFile, project);
   }
 
   async runCode(file, project) {
@@ -882,8 +891,7 @@ class CodeRunner {
         }
       ],
       cb: (key, value) => {
-        if (key === "commands")
-          return this.#commandsSettings();
+        if (key === "commands") return this.#commandsSettings();
         this.settings[key] = value;
         appSettings.update();
       }

@@ -12,7 +12,7 @@ function jsx(type, props, key) {
   }
 
   const newProps = {};
-  for (const prop of props) {
+  for (const prop in props) {
     if (typeof prop === "string" && prop.startsWith("attr")) {
       (newProps.attrs ??= {})[prop.slice(5)] = props[prop];
     } else {

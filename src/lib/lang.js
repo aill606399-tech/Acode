@@ -187,7 +187,10 @@ export default {
     const lang = langMap[code] || langMap['en-us'];
     const strings = await lang.strings();
     // window["strings"] = strings;
-    window["strings"] = JSON.parse(strings.default);
+    // console.log(strings, strings.default)
+    window["strings"] = (typeof strings.default === "string")
+      ? JSON.parse(strings.default)
+      : strings.default;
   },
   list: Object.keys(langMap).map((code) => [code, langMap[code].name]),
   getName(code) {

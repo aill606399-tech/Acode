@@ -9,25 +9,25 @@ export default defineConfig({
     exclude: [], jsx: "automatic",
     jsxImportSource: "html-tag-jsx"
   },
-  assetsInclude: ['**/*.hbs'],
+  // assetsInclude: ['**/*.hbs'],
   optimizeDeps: {
     esbuildOptions: {
-      loader: { '.js': 'jsx' }
-      // plugins: [
-      //   {
-      //     name: "load-js-files-as-jsx",
-      //     setup(build) {
-      //       build.onLoad({ filter: /src\/.*\.js$/ }, async args => {
-      //         return {
-      //           loader: "jsx",
-      //           contents: await fs.readFile(
-      //             args.path, "utf8"
-      //           )
-      //         };
-      //       });
-      //     }
-      //   }
-      // ]
+      loader: { '.js': 'jsx' },
+      plugins: [
+        // {
+        //   name: "load-assets-raw",
+        //   setup(build) {
+        //     build.onLoad({ filter: /src\/.*\.hbs$/ }, async args => {
+        //       return {
+        //         loader: "text",
+        //         contents: await fs.readFile(
+        //           args.path, "utf8"
+        //         )
+        //       };
+        //     });
+        //   }
+        // }
+      ]
     }
   },
   build: {
@@ -74,7 +74,18 @@ export default defineConfig({
       }
     }
   },
-  plugins: [], // No direct equivalent to MiniCssExtractPlugin in Vite, handled by CSS preprocessors
+  plugins: [
+    {
+      name: 'vite-plugin-import-hbs-raw',
+      transform(code, id) {
+        if (id.endsWith('.hbs')) {
+          const content = fs.readFileSync(id, 'utf-8');
+          return `export default ${JSON.stringify(content)}`;
+        }
+        return null;
+      },
+    }
+  ], // No direct equivalent to MiniCssExtractPlugin in Vite, handled by CSS preprocessors
   server: {
     // Optional server configuration
     port: 8080,

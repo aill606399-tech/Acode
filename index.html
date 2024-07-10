@@ -6,8 +6,6 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <link rel="stylesheet" href="./www/res/icons/style.css" />
-    <link rel="stylesheet" href="./www/res/file-icons/style.css" />
 
     <script>
       const debugPort = localStorage.acodeDebugPort;
@@ -182,6 +180,10 @@
       }
     </style>
     <script src="./src/lib/main.js" type="module"></script>
+    <script type="module">
+      import "./www/res/icons/style.css";
+      import "./www/res/file-icons/style.css"
+    </script>
 
     <title>Acode</title>
   </head>

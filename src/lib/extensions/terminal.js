@@ -805,7 +805,8 @@ export class PtyHostBackend extends TerminalBackend {
           "\r\n" +
             color(
               "[Connection closed - Press enter to exit]",
-              "white", "on_red"
+              "white",
+              "on_red"
             ) +
             "\r\n"
         );
@@ -877,7 +878,8 @@ export class WebSocketBackend extends TerminalBackend {
           "\r\n" +
             color(
               "[Connection to server closed - Press enter to exit]",
-              "white", "on_red"
+              "white",
+              "on_red"
             ) +
             "\r\n"
         );
@@ -912,7 +914,8 @@ export class WebSocketBackend extends TerminalBackend {
 
   setup(terminal) {
     this.terminal = terminal;
-    if (this.socket?.readyState == 1) {}
+    if (this.socket?.readyState == 1) {
+    }
 
     terminal.addTermOption(["Reconnect Server", "refresh"], () => {
       if (this.socket.readyState == 3) {
@@ -983,7 +986,8 @@ export class TermuxBackend extends WebSocketBackend {
           this.host = host;
           return (
             host.replace("http", "ws") +
-            "terminal/" + this.termId +
+            "terminal/" +
+            this.termId +
             (cmd ? "?cmd=" + cmd : "")
           );
         },
@@ -996,7 +1000,8 @@ export class TermuxBackend extends WebSocketBackend {
   async resize({ rows, cols }) {
     try {
       await fetch(this.host + "resize/" + this.termId, {
-        method: "POST", mode: "no-cors",
+        method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/json"
         },
@@ -1009,7 +1014,9 @@ export class TermuxBackend extends WebSocketBackend {
     return WebSocketBackend.fromState(state, TermuxBackend);
   }
 
-  static get alias() { return "termux" }
+  static get alias() {
+    return "termux";
+  }
 }
 
 export class AcodeXBackend extends WebSocketBackend {
@@ -1596,7 +1603,8 @@ class AcodeTerminalPlugin {
       {
         key: "terminal-settings",
         text: strings["terminal"] || "Terminal",
-        index: 0, icon: "tune"
+        index: 0,
+        icon: "tune"
       },
       (this.#settingsPage = settingsPage(
         "Terminal",
@@ -2049,26 +2057,28 @@ class AcodeTerminalPlugin {
 
   async loadTerminals() {
     let data = await this.#stateFile?.readFile("utf-8");
-    console.log(data)
+    console.log(data);
     if (data) {
-      for (let item of JSON.parse(data)) {
-        let terminal = item.name;
-        let backend = this.#getBackend(
-          item.backend?.name,
-          item.backend.config,
-          item.backend?.termId
-        );
+      try {
+        for (let item of JSON.parse(data)) {
+          let terminal = item.name;
+          let backend = this.#getBackend(
+            item.backend?.name,
+            item.backend.config,
+            item.backend?.termId
+          );
 
-        await this.newTerminal(
-          {
-            terminal,
-            backend,
+          await this.newTerminal(
+            {
+              terminal,
+              backend,
 
-            termData: item.termData
-          },
-          false
-        );
-      }
+              termData: item.termData
+            },
+            false
+          );
+        }
+      } catch {}
     }
   }
 
